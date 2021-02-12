@@ -1,8 +1,7 @@
 use std::{io, env};
 use std::process;
-use std::path::Path;
 use std::ffi::CString;
-use nix::unistd::{fork, ForkResult, execvp};
+use nix::unistd::{fork, ForkResult, execvp, chdir};
 use nix::sys::wait::waitpid;
 
 fn main() -> io::Result<()> {
@@ -15,25 +14,25 @@ fn main() -> io::Result<()> {
             process::exit(0x0100);
         }
         if input == "cd" {
-            let root = Path::new("/");
-            assert!(env::set_current_dir(&root).is_ok());
+            let args : String = env::args().collect();
+            let path = args.as_str();
+            chdir(path).expect("incorrect input");
         }
         if input == " " {
             let path = env::current_dir()?;
             println!("{}", path.display());
         } else {
-            let c_input = externalize(input.as_str());
+            let input = input.trim();
+            let c_input = externalize(input);
             match unsafe { fork() }.unwrap() {
                 ForkResult::Parent { child } => {
-                    waitpid(child, None);
+                    waitpid(child, None).expect("incorrect input");
                 }
                 ForkResult::Child => {
-                    let exe = CString::new(c_input).unwrap();
-                    execvp(exe.as_c_str(), &[exe.as_c_str()]).unwrap();
+                    execvp(&c_input[0], &c_input).unwrap();
                 }
             }
         }
-        Ok(());
     }
 }
 
