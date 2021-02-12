@@ -43,18 +43,3 @@ fn externalize(command: &str) -> Box<[CString]> {
         .collect::<Vec<_>>();
     converted.into_boxed_slice()
 }
-
-//vssh, the Very Simple SHell:
-// Displays the current working directory while awaiting user input.
-// If the user types exit, the program ends.
-// If the user types cd [dir], change current working directory accordingly.
-// If the user types a blank line, ignore it and display the prompt once again.
-// Execute any other command the user types by spawning a new process:
-// Be sure to include the nix crate in Cargo.toml.
-// Use fork to create the child process.
-// Within the child process, use execvp to execute the command.
-// Within the parent process, use waitpid to wait for the child process to complete.
-
-// https://hendrix-cs.github.io/csci320/projects/rust2.html
-
-// there are lots of links to the rust documentation on the corresponding website.
