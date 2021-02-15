@@ -3,7 +3,7 @@ use std::process;
 use std::ffi::CString;
 use nix::unistd::{fork, ForkResult, execvp};
 use nix::sys::wait::waitpid;
-use std::env::{current_dir};
+use std::env::current_dir;
 
 fn main() -> io::Result<()> {
     loop {
@@ -11,14 +11,16 @@ fn main() -> io::Result<()> {
         println!("{}", path.display());
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("not valid input.");
-        if input.contains("exit") {
-            process::exit(0x0100);
-        }
         if input.contains("cd") {
             let mut path :String = input.split("cd ").collect();
             path = current_dir().unwrap().to_str().unwrap().to_owned() + "/" + path.as_str();
-            println!("{}", path);
-            std::env::set_current_dir(path).unwrap_err();
+            assert!(env::set_current_dir(path).is_ok());
+        }
+        if input.contains("exit") {
+            process::exit(0x0100);
+        }
+        if input.contains(""){
+            let _path = env::current_dir()?;
         }
         else {
             let input = input.trim();
@@ -28,7 +30,7 @@ fn main() -> io::Result<()> {
                     waitpid(child, None).expect("incorrect input");
                 }
                 ForkResult::Child => {
-                    execvp(&c_input[0], &c_input).unwrap_err();
+                    execvp(&c_input[0], &c_input).unwrap();
                 }
             }
         }
