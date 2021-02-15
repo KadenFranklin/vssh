@@ -13,8 +13,7 @@ fn main() -> io::Result<()> {
         io::stdin().read_line(&mut input).expect("not valid input.");
         if input.contains("cd") {
             let mut path :String = input.split("cd ").collect();
-            path = current_dir().unwrap().to_str().unwrap().to_owned() + "/" + path.as_str();
-            assert!(env::set_current_dir(path).is_ok());
+            assert!(env::set_current_dir(path.trim()).is_ok());
         }
         if input.contains("exit") {
             process::exit(0x0100);
