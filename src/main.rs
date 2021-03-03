@@ -1,9 +1,8 @@
 use std::{io, env};
 use std::process;
-use std::ffi::CString;
+use std::ffi::{CString};
 use nix::unistd::{fork, ForkResult, execvp};
 use nix::sys::wait::waitpid;
-use std::env::current_dir;
 
 fn main() -> io::Result<()> {
     loop {
@@ -12,24 +11,25 @@ fn main() -> io::Result<()> {
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("not valid input.");
         if input.contains("cd") {
-            let mut path :String = input.split("cd ").collect();
+            let path :String = input.split("cd ").collect();
             assert!(env::set_current_dir(path.trim()).is_ok());
         }
         if input.contains("exit") {
             process::exit(0x0100);
         }
-        if input.contains(""){
-            let _path = env::current_dir()?;
-        }
+        if input.trim() == ""{
+            //handle error message somehow
+            }
         else {
-            let input = input.trim();
-            let c_input = externalize(input);
             match unsafe { fork() }.unwrap() {
                 ForkResult::Parent { child } => {
                     waitpid(child, None).expect("incorrect input");
                 }
                 ForkResult::Child => {
-                    execvp(&c_input[0], &c_input).unwrap();
+                    let input = input.trim();
+                    let c_input = CString::new(input).unwrap();
+                    let externalized =  externalize(input);
+                    execvp(c_input.as_c_str(), &externalized).unwrap();
                 }
             }
         }
