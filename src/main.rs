@@ -17,9 +17,7 @@ fn main() -> io::Result<()> {
         if input.contains("exit") {
             process::exit(0x0100);
         }
-        if input.trim() == ""{
-            //handle error message somehow
-            }
+        if input.trim() == "" {}
         else {
             match unsafe { fork() }.unwrap() {
                 ForkResult::Parent { child } => {
