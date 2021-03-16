@@ -27,7 +27,7 @@ fn main() -> io::Result<()> {
                     let input = input.trim();
                     let c_input = CString::new(input).unwrap();
                     let externalized =  externalize(input);
-                    execvp(c_input.as_c_str(), &externalized).unwrap();
+                    execvp(&externalized[0], &externalized).unwrap();
                 }
             }
         }
